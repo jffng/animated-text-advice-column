@@ -1,175 +1,150 @@
-// iPhone 6 dimensions
-var screenWidth = 375;
-var screenHeight = 672;
-var myFont, gif, maxWidth, gifHeight, gifWidth, gifRatio;
-
-function preload(){
-	myFont = loadFont('assets/sf-text-medium.ttf');
-	gif = loadGif('assets/test.gif');
-}
-
-function setup(){
-	createCanvas(screenWidth, screenHeight);
-	background(255);
-	stroke(200);
-	fill(255);
-	rect(0,0, 374, 671);
-	ellipseMode(CENTER);
-	smooth();
-	textFont(myFont);
-
-	rectMode(CENTER);
-	var t = text;	
-	var blue = color(0, 122, 255);
-	var grey = color(205,205,205);
-	maxWidth = Math.ceil(screenWidth * .6);
-
-
-	sometext = "hey ?what is this going to look like...... .  who knows i sure don't. but it doens't look perfect yet. it's almost getting there after";
-	nextMsgY = drawMessage(sometext, 10, t, "sender");
-
-	sometext = "some not so ordinary text blah blah blah ";
-	next = drawMessage(sometext, 1 + nextMsgY, t, "sender");
-
-	sometext = "some not so";
-	next = drawMessage(sometext, 10 + next, t, "receiver");
-
-	sometext = "some not so ssssssssssssssssssssssss";
-	next = drawMessage(sometext, 1 + next, t, "receiver");
-
-	sometext = "some not";
-	next = drawMessage(sometext, 10 + next, t, "sender");
-
-	sometext = "some not so ordinary text blah blah blah ";
-	next = drawMessage(sometext, 1 + next, t, "sender");
-
-
-}
-
-function draw(){
-
-	gifRatio = gif.width / gif.height;
-	gifHeight = maxWidth / gifRatio; 
-
-	image(gif, width * .925 - maxWidth, 5 + next, maxWidth, gifHeight);
-
-}
-
-function drawMessage(text, firstCornerY, layoutText, orientation){
+var sketch = function(p){
+	// iPhone 6 dimensions
+	var screenWidth = 375;
+	var screenHeight = 672;
+	var myFont, gif, maxWidth, gifHeight, gifWidth, gifRatio, previousMessageType;
 	var c, textColor, position, xOffset, width, textOffset, heightScale;
 	var height = 28; 
-	var yOffset = height / 2;
+	var yOffset = height / 2;	
+	var start = 10;
+	var spacing = 0;
 
-	if (orientation == "sender"){
-		position = .925;
-		c = color(0, 122, 255);
-		textColor = 255;
-		xOffset = height / 2;
-	} else {
-		position = .075;
-		c = color(210,210,210);
-		textColor = 55;
-		xOffset = - height / 2;
+	p.preload = function(){
+		myFont = p.loadFont('assets/sf-text-medium.ttf');
+		gif = p.loadGif('assets/test.gif');	
 	}
 
-	// maximum width of a message line
-	// console.log('max width: '+ maxWidth);
+	function drawMessage(copy, firstCornerY, orientation){
+		var layoutText = p.text;
 
-	// cornerX
-	var firstCornerX = screenWidth * position;
-	
-	var str = text;
-	textSize(12);
-	var numLines = Math.ceil(textWidth(str) / (maxWidth - 20));
+		if (orientation == "sender"){
+			position = .925;
+			c = p.color(0, 122, 255);
+			textColor = 255;
+			xOffset = height / 2;
+		} else {
+			position = .075;
+			c = p.color(225,225,225);
+			textColor = 55;
+			xOffset = - height / 2;
+		}
 
-	textAlign(LEFT);
+		var firstCornerX = screenWidth * position;
+		
+		var str = copy;
+		p.textSize(12);
+		var numLines = Math.ceil(p.textWidth(str) / maxWidth);
 
-	switch (numLines) {
-		case 1:
-			textAlign(LEFT);
-			var tWidth = textWidth(str);
-			textOffset = 4;
-			width = Math.ceil(textWidth(str) + 8);
-			heightScale = 0;
-			// console.log("text width: " + textWidth(str));
+		p.textAlign(p.LEFT);
 
-			// if (tWidth > 20 && tWidth < 120){
-			// 	width = Math.ceil(textWidth(str) + xOffset);
-			// }
-			// else if (tWidth > 120 && tWidth < 207){
-			// 	width = Math.ceil(textWidth(str) + xOffset * 2);
-			// } 
-			// else if (tWidth > 207){
-			// 	width = maxWidth;
-			// 	numLines = 2;
-			// 	textOffset = 2;
-			// 	heightScale = .25;
-			// 	textAlign(LEFT);
-			// }
+		switch (numLines) {
+			case 1:
+				var tWidth = p.textWidth(str);
+				textOffset = 4;
+				width = Math.ceil(p.textWidth(str) + 4);
+				heightScale = 0;
+				break;
+			case 2: 
+				width = maxWidth;
+				textOffset = 2;
+				heightScale = .25;
+	 			break;
+			case 3:
+				width = maxWidth;
+				textOffset = 2;
+				heightScale = .55;
+				break;
+			default:
+				width = maxWidth;
+				textOffset = 2;
+				heightScale = .65;
+				break;
+		}
 
-			break;
-		case 2: 
-			width = maxWidth;
-			textOffset = 2;
-			heightScale = .25;
- 			break;
-		case 3:
-			width = maxWidth;
-			textOffset = 2;
-			heightScale = .55;
-			break;
-		default:
-			width = maxWidth;
-			textOffset = 2;
-			heightScale = .65;
-			break;
+		var secondCornerY = firstCornerY + height; 
+		if (orientation == "sender") var secondCornerX = firstCornerX - width;
+		else var secondCornerX = firstCornerX + width;
+
+		p.fill(c);
+		p.noStroke();
+		
+		p.rectMode(p.CORNERS);
+		p.rect(firstCornerX, firstCornerY, secondCornerX, secondCornerY);
+
+		// draw top right and left circles
+		p.ellipse(firstCornerX, firstCornerY + height / 2, height, height);
+		p.ellipse(secondCornerX, firstCornerY + height / 2, height, height);
+		
+		var middleRightX = firstCornerX + xOffset;
+		var middleRightY = firstCornerY + yOffset;
+		var middleLeftX = secondCornerX - xOffset;
+		var middleLeftY = secondCornerY + yOffset * numLines * heightScale;
+		// console.log("middle left Y: " + middleLeftY);
+		var thirdCornerY = middleLeftY + yOffset;
+		
+		if (numLines > 1) {
+			p.rect(middleRightX, middleRightY, middleLeftX, middleLeftY);
+			p.rect(firstCornerX, firstCornerY, secondCornerX, thirdCornerY);
+		
+			// draw bottom right and left circles
+			p.ellipse(firstCornerX, middleLeftY, height, height);
+			p.ellipse(secondCornerX,  middleLeftY, height, height);
+		} 
+
+		p.rectMode(p.CORNERS);
+		p.fill(textColor);
+		if (orientation == "sender") {
+			// do nothing;	
+		} else {
+			secondCornerX -= width;
+		} 
+		p.text(str, secondCornerX, firstCornerY + yOffset / textOffset, width, thirdCornerY);
+
+		if (numLines === 1) thirdCornerY = secondCornerY;
+
+		return thirdCornerY;
 	}
 
-	var secondCornerY = firstCornerY + height; 
-	if (orientation == "sender") var secondCornerX = firstCornerX - width;
-	else var secondCornerX = firstCornerX + width;
+	p.setup = function(){
+		p.createCanvas(screenWidth, screenHeight);
+		p.background(255);
+		p.stroke(200);
+		p.fill(255);
+		p.rect(0,0, 374, 671);
+		p.ellipseMode(p.CENTER);
+		p.textFont(myFont);
+		p.smooth();
 
-	// var left = centerX - width / 2;
-	// var right = centerX + width / 2;
+		p.rectMode(p.CENTER);
+		var t = p.text;	
+		maxWidth = Math.ceil(screenWidth * .6);
 
-	fill(c);
-	noStroke();
-	
-	rectMode(CORNERS);
-	rect(firstCornerX, firstCornerY, secondCornerX, secondCornerY);
+		// grabs the global variable "conversation" set from the form
+		for (var m in conversation) {
+			if (m === 0) {
+				previousMessageType = conversation[m].type;
+			}
+			if (previousMessageType == conversation[m].type) {
+				spacing = 1;
+			} else {
+				spacing = 10;
+			}
+			// draw the message, return the value for where the next message is to be placed
+			start = drawMessage(conversation[m].message, start + spacing, conversation[m].type);
+			
+			previousMessageType = conversation[m].type;
+		}
 
-	// draw top right and left circles
-	ellipse(firstCornerX, firstCornerY + height / 2, height, height);
-	ellipse(secondCornerX, firstCornerY + height / 2, height, height);
-	
-	var middleRightX = firstCornerX + xOffset;
-	var middleRightY = firstCornerY + yOffset;
-	var middleLeftX = secondCornerX - xOffset;
-	var middleLeftY = secondCornerY + yOffset * numLines * heightScale;
-	// console.log("middle left Y: " + middleLeftY);
-	var thirdCornerY = middleLeftY + yOffset;
-	
-	if (numLines > 1) {
-		rect(middleRightX, middleRightY, middleLeftX, middleLeftY);
-		rect(firstCornerX, firstCornerY, secondCornerX, thirdCornerY);
-	
-		// draw bottom right and left circles
-		ellipse(firstCornerX, middleLeftY, height, height);
-		ellipse(secondCornerX,  middleLeftY, height, height);
-	} 
+	}
 
-	rectMode(CORNERS);
-	fill(textColor);
-	if (orientation == "sender") {
-		// do nothing;	
-	} else {
-		secondCornerX -= width;
-	} 
-	layoutText(str, secondCornerX, firstCornerY + yOffset / textOffset, width, thirdCornerY);
+	p.draw =function(){
+		gifWidth = maxWidth + Math.abs(xOffset) * 2;
+		gifRatio = gif.width / gif.height;
+		gifHeight = gifWidth / gifRatio; 	
 
-	if (numLines === 1) thirdCornerY = secondCornerY;
+		p.image(gif, screenWidth * .925 - maxWidth - Math.abs(xOffset), start + spacing, gifWidth, gifHeight);
 
-	return thirdCornerY;
+	}	
 }
 
 
