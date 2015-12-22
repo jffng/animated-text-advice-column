@@ -14,16 +14,18 @@ var sketch = function(p){
 		gif = p.loadGif('assets/test.gif');	
 	}
 
-	function drawMessage(copy, firstCornerY, orientation){
+	function drawMessage(copy, firstCornerY, orientation, alpha){
 		var layoutText = p.text;
 
 		if (orientation == "sender"){
 			position = .925;
-			c = p.color(0, 122, 255);
+			p.colorMode(p.HSB);
+			c = p.color(211, 100 - alpha, 100);
 			textColor = 255;
 			xOffset = height / 2;
 		} else {
 			position = .075;
+			p.colorMode(p.RGB);
 			c = p.color(225,225,225);
 			textColor = 55;
 			xOffset = - height / 2;
@@ -92,6 +94,7 @@ var sketch = function(p){
 		} 
 
 		p.rectMode(p.CORNERS);
+		p.colorMode(p.RGB);
 		p.fill(textColor);
 		if (orientation == "sender") {
 			// do nothing;	
@@ -121,6 +124,7 @@ var sketch = function(p){
 
 		// grabs the global variable "conversation" set from the form
 		for (var m in conversation) {
+			var a = undefined;
 			if (m === 0) {
 				previousMessageType = conversation[m].type;
 			}
@@ -129,8 +133,12 @@ var sketch = function(p){
 			} else {
 				spacing = 10;
 			}
+
+			if (conversation[m].type == "sender") {
+				var a = ( conversation.length - 1 ) * 3 - m * 3;
+			}
 			// draw the message, return the value for where the next message is to be placed
-			start = drawMessage(conversation[m].message, start + spacing, conversation[m].type);
+			start = drawMessage(conversation[m].message, start + spacing, conversation[m].type, a);
 			
 			previousMessageType = conversation[m].type;
 		}
