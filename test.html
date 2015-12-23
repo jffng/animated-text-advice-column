@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<input type="file" id="upload">
+	<script type="text/javascript" src="lib/p5.min.js"></script>
+	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
+	<script type="text/javascript">
+		var gif;
+
+		function setup() {
+			createCanvas(300, 300);
+		}
+
+		function draw() {
+			if (gif && gif.loaded()) {
+				image(gif, 0, 0);
+			}
+		}
+
+		function handleFileSelect(evt) {
+			var files = evt.target.files; // FileList object
+
+			for (var i = 0, f; f = files[i]; i++) {
+				if (!f.type.match('image.*')) {
+					continue;
+				}
+
+				var reader = new FileReader();
+
+				reader.onload = (function(theFile) {
+					return function(e) {
+		                                // this is where the magic happens
+						gif = loadRawGif(e.target.result);
+					};
+				})(f);
+
+				reader.readAsBinaryString(f);
+			}
+		}
+
+		document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+	</script>
+</body>
+</html>

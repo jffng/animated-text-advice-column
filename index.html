@@ -12,8 +12,7 @@
 		}
 		input[type="radio"] {
 			margin-left: 20px;
-/*			margin-right: 20px;
-*/		}
+		}
 		.message {
 
 		}
@@ -30,7 +29,8 @@
 		Animated Text: Advice Column Gif Generator
 	</h1>
 	<h3>
-		Enter the conversation, in order, with this form! 
+		Enter the conversation, in order, with this form!
+		<br>(don't leave blank lines plz :)
 	</h3>
 	<div>
 		<form id="the-form">
@@ -40,6 +40,7 @@
 				<input type="text" placeholder="message goes here">
 				<button class="delete">Delete line</button>	
 			</div>
+			<!-- <input type="file" id="upload"> -->
 		</form>
 		<br>
 		<button class="add-line">+ Message</button>
@@ -52,7 +53,9 @@
 	<script type="text/javascript" src="sketch.js"></script>
 	<script type="text/javascript">
 	var lineCounter = 0;
-	var myp5, conversation;
+	var myp5, conversation, gif, h, w; // gifWidth, gifHeight, gifRatio;
+	var screenWidth = 375;
+	var screenHeight = 0;
 
 	$('.delete').click(function(e){
 		e.preventDefault();
@@ -73,23 +76,87 @@
 		});
 	});
 
-	$('.generate').click(function(e){
+	$('.add-gif').click(function(e){
+		if($('#upload').length) {
+			alert("Can only use gif at a time!");
+		} else {
+			$('#the-form').append('<div class="message"><input id="upload" type="file"><button class="delete">Delete line</button></div>');
+			lineCounter++;
+			$('#upload').siblings('.delete').click(function(){
+				$(this).parent().remove();
+				lineCounter--;
+			});
+
+			document.getElementById('upload').addEventListener('change', handleFileSelect, false);			
+
+		}
+
+	});
+
+	$('.generate').click(function(ev){
+		screenHeight = 0;
 		// array to be handled by the p5 sketch 
 		conversation = [];
 		$('#the-form').children('.message').each(function(e){
-			var message = {
-				type: $(this).children('input:checked').val(),
-				message: $(this).children('input:text').val()
+			if ($(this).children('input:file').length) {
+				var message = {
+					type: "gif",
+					height: h,
+					width: w
+				}
+				screenHeight += h + 20;
+			} else {
+				var message = {
+					type: $(this).children('input:checked').val(),
+					message: $(this).children('input:text').val()
+				}
+				screenHeight += Math.ceil($(this).children('input:text').val().length / 40) * 30;
 			}
-
+			
 			// new message objects are pushed to the array
 			conversation.push(message);
 		});
 
+		// console.log('screen height: ' + screenHeight);
+
+		screenHeight += 30;
+
 		if (myp5) myp5.remove();
 		myp5 = new p5(sketch);
+
+		// if ( $('#upload').length ) sketch.handleFileSelect(fileUploadEvent);
+
 	});
 
+	function handleFileSelect(evt) {
+		var files = evt.target.files; // FileList object
+		var screenWidth = 375; 
+
+		for (var i = 0, f; f = files[i]; i++) {
+			if (!f.type.match('image.*')) {
+				continue;
+			}
+
+			var reader = new FileReader();
+
+			reader.onload = (function(theFile) {
+				return function(e) {
+					// this is where the magic happens
+					gif = p5.prototype.loadRawGif(e.target.result);
+
+					// this is not a good solution, but i'm tired
+					setTimeout(function(){
+						w = Math.ceil(screenWidth * .6) + 28;
+						var r = gif.width / gif.height;
+						h = w / r;
+
+					}, 500);
+				};
+			})(f);
+
+			reader.readAsBinaryString(f);
+		}
+	}
 
 	</script>
 </body>

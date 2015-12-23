@@ -1,17 +1,72 @@
 var sketch = function(p){
-	// iPhone 6 dimensions
-	var screenWidth = 375;
-	var screenHeight = 672;
-	var myFont, gif, maxWidth, gifHeight, gifWidth, gifRatio, previousMessageType;
-	var c, textColor, position, xOffset, width, textOffset, heightScale;
+	// some variables in no particular order
+	var myFont, maxWidth, previousMessageType,
+	c, textColor, position, xOffset, width, 
+	textOffset, heightScale, gifNext, gifWidth, gifHeight;
 	var height = 28; 
 	var yOffset = height / 2;	
-	var start = 10;
+	var next = 10;
 	var spacing = 0;
 
 	p.preload = function(){
 		myFont = p.loadFont('assets/sf-text-medium.ttf');
-		gif = p.loadGif('assets/test.gif');	
+		// gif = p.loadGif('assets/test.gif');	
+	}
+
+	p.setup = function(){
+		p.createCanvas(screenWidth, screenHeight);
+		p.background(255);
+		p.stroke(200);
+		p.fill(255);
+		p.rect(0,0, screenWidth - 1, screenHeight - 1);
+		p.ellipseMode(p.CENTER);
+		p.textFont(myFont);
+		p.smooth();
+
+		p.rectMode(p.CENTER);
+		var t = p.text;	
+		maxWidth = Math.ceil(screenWidth * .6);
+
+		// grabs the global variable "conversation" set from the form
+		for (var m in conversation) {
+			var a = undefined;
+
+			if (m === 0) {
+				previousMessageType = conversation[m].type;
+			}
+
+			if (previousMessageType == conversation[m].type) {
+				spacing = 1;
+			} else if (previousMessageType == "gif" && conversation[m].type == "sender") {
+				spacing = 10;
+			} else {
+				spacing = 10;
+			}
+
+			// draw the message, return the value for where the next message is to be placed
+			if (conversation[m].type == "sender") {
+				// set the alpha value for multiple blue messages
+				var a = ( conversation.length - 1 ) * 3 - m * 3;
+			
+				next = drawMessage(conversation[m].message, next + spacing, conversation[m].type, a);	
+			} else if (conversation[m].type == "gif") {
+				gifWidth = conversation[m].width;
+				gifHeight = conversation[m].height;
+				gifNext = next + spacing;
+				next = next + spacing + gifHeight;
+			} else {
+				next = drawMessage(conversation[m].message, next + spacing, conversation[m].type, a);					
+			}
+
+			previousMessageType = conversation[m].type;
+		}
+
+	}
+
+	p.draw =function(){
+		if(gif && gif.loaded()){
+			p.image(gif, screenWidth * .925 - maxWidth - Math.abs(xOffset), gifNext, gifWidth, gifHeight);	
+		}
 	}
 
 	function drawMessage(copy, firstCornerY, orientation, alpha){
@@ -107,54 +162,7 @@ var sketch = function(p){
 
 		return thirdCornerY;
 	}
-
-	p.setup = function(){
-		p.createCanvas(screenWidth, screenHeight);
-		p.background(255);
-		p.stroke(200);
-		p.fill(255);
-		p.rect(0,0, 374, 671);
-		p.ellipseMode(p.CENTER);
-		p.textFont(myFont);
-		p.smooth();
-
-		p.rectMode(p.CENTER);
-		var t = p.text;	
-		maxWidth = Math.ceil(screenWidth * .6);
-
-		// grabs the global variable "conversation" set from the form
-		for (var m in conversation) {
-			var a = undefined;
-			if (m === 0) {
-				previousMessageType = conversation[m].type;
-			}
-			if (previousMessageType == conversation[m].type) {
-				spacing = 1;
-			} else {
-				spacing = 10;
-			}
-
-			if (conversation[m].type == "sender") {
-				var a = ( conversation.length - 1 ) * 3 - m * 3;
-			}
-			// draw the message, return the value for where the next message is to be placed
-			start = drawMessage(conversation[m].message, start + spacing, conversation[m].type, a);
-			
-			previousMessageType = conversation[m].type;
-		}
-
-	}
-
-	p.draw =function(){
-		gifWidth = maxWidth + Math.abs(xOffset) * 2;
-		gifRatio = gif.width / gif.height;
-		gifHeight = gifWidth / gifRatio; 	
-
-		p.image(gif, screenWidth * .925 - maxWidth - Math.abs(xOffset), start + spacing, gifWidth, gifHeight);
-
-	}	
 }
-
 
 
 
