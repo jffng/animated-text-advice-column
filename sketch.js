@@ -213,6 +213,7 @@ $('.add-gif').click(function(e) {
     });
 
     document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+    $('#upload').click();
 
   }
 
