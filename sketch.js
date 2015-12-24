@@ -7,6 +7,7 @@ var sketch = function(p){
 	var yOffset = height / 2;	
 	var next = 10;
 	var spacing = 0;
+	var self = this;
 
 	p.preload = function(){
 		myFont = p.loadFont('assets/sf-text-medium.ttf');

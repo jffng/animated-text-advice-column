@@ -49,11 +49,14 @@
 	</div>
 	<script type="text/javascript" src="lib/p5.min.js"></script>
 	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
+	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
+	<script type="text/javascript" src="lib/gif.js"></script>
+	<script type="text/javascript" src="lib/gif.worker.js"></script>
 	<script type="text/javascript" src="lib/bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="sketch.js"></script>
 	<script type="text/javascript">
 	var lineCounter = 0;
-	var myp5, conversation, gif, h, w; // gifWidth, gifHeight, gifRatio;
+	var myp5, conversation, gif, h, w, cut; // gifWidth, gifHeight, gifRatio;
 	var screenWidth = 375;
 	var screenHeight = 0;
 
@@ -110,7 +113,7 @@
 					type: $(this).children('input:checked').val(),
 					message: $(this).children('input:text').val()
 				}
-				screenHeight += Math.ceil($(this).children('input:text').val().length / 40) * 30;
+				screenHeight += Math.ceil($(this).children('input:text').val().length / 40) * 32;
 			}
 			
 			// new message objects are pushed to the array
@@ -124,8 +127,34 @@
 		if (myp5) myp5.remove();
 		myp5 = new p5(sketch);
 
-		// if ( $('#upload').length ) sketch.handleFileSelect(fileUploadEvent);
+		// wait for sketch to load the gif
+		setTimeout(function(){
+			cut = new GIF({
+				workers: 10,
+				quality: 10,
+				width: screenWidth,
+				height: screenHeight
+			});
 
+			var totalFrames = gif.totalFrames();
+			// or copy the pixels from a canvas context
+			for (var i = 0; i < totalFrames; i++) {
+				cut.addFrame(myp5.canvas.getContext('2d'), {
+					copy: true,
+					// delay: 20
+				});
+				console.log(i);
+			}
+			
+			cut.on('finished', function(blob) {
+				window.open(URL.createObjectURL(blob));
+				console.log(blob);
+				console.log('finished the cut');
+			});
+
+			cut.render();
+		}, 2000)
+				
 	});
 
 	function handleFileSelect(evt) {
