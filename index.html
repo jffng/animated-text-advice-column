@@ -1,59 +1,94 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Convo Submit</title>
-	<style type="text/css">
-		body {
-			font-family: Helvetica;
-		}
-		input[type="text"] {
-			margin-left:20px;
-			width: 200px;
-		}
-		input[type="radio"] {
-			margin-left: 20px;
-		}
-		.message {
 
-		}
-		.preview {
-			margin-left: 100px;
-		}
-		#the-form {
-			width: 100%;
-		}
-	</style>
-	</head>
+<head>
+  <title>Convo Submit</title>
+  <style type="text/css">
+    body {
+      font-family: Helvetica;
+        background-color: #fff;
+    }
+    input, body, button {
+      font-size: 13px;
+    }
+    input[type="text"] {
+      margin-left: 20px;
+      width: 300px;
+    }
+    .delete {
+      float: right;
+    }
+    .message {
+      margin: 10px 0px;
+    }
+    .preview,
+    .generate {
+      float: right;
+    }
+    .preview {
+      margin-right: 10px;
+    }
+    #the-form {
+      width: 100%;
+    }
+    #wrapper {
+      width:  600px;
+      padding: 50px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #eee;
+      margin: auto;
+    }
+    #canvas-holder {
+      margin-top: 20px;
+      padding: 20px;
+      padding-top: 50px;
+      border-top: 1px solid #ccc;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+
 <body>
-	<h1>
-		Animated Text: Advice Column Gif Generator
-	</h1>
-	<h3>
-		Enter the conversation, in order, with this form!
-		<br>(don't leave blank lines plz :)
-	</h3>
-	<div>
-		<form id="the-form">
-			<div class="message" id="line-0">
-				<input type="radio" value="receiver" name="who-0">From You
-				<input type="radio" value="sender" name="who-0" checked>From Me
-				<input type="text" placeholder="message goes here">
-				<button class="delete">Delete line</button>	
-			</div>
-			<!-- <input type="file" id="upload"> -->
-		</form>
-		<br>
-		<button class="add-line">+ Message</button>
-		<button class="add-gif">+ Gif</button>
-    <button class="preview">Preview</button>
-		<button class="generate">Save</button>
-	</div>
-	<script type="text/javascript" src="lib/p5.min.js"></script>
-	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
-	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
-	<script type="text/javascript" src="lib/gif.js"></script>
-	<script type="text/javascript" src="lib/gif.worker.js"></script>
-	<script type="text/javascript" src="lib/bower_components/jquery/dist/jquery.min.js"></script>
-	<script type="text/javascript" src="sketch.js"></script>
+  <div id="wrapper">
+    <h1>
+      Animated Text: Advice Column Gif Generator
+    </h1>
+
+    <h3>
+      Enter the conversation, in order, with this form!
+    </h3>
+
+    <div>
+      <form id="the-form" action="">
+        <div class="message" id="line-0">
+          <label><input type="radio" value="receiver" name="who-0" checked>From You</label>
+          <label><input type="radio" value="sender" name="who-0">From Me</label>
+          <input type="text" placeholder="message goes here">
+          <button class="delete">Delete line</button>
+        </div>
+        <!-- <input type="file" id="upload"> -->
+      </form>
+      <br>
+      <button class="add-line">+ Message</button>
+      <button class="add-gif">+ Gif</button>
+      <button class="generate">Save</button>
+      <button class="preview">Preview</button>
+
+    </div>
+
+    <div id="canvas-holder"></div>
+  </div>
+
+  <script type="text/javascript" src="lib/p5.min.js"></script>
+  <script type="text/javascript" src="lib/p5.gif.min.js"></script>
+  <script type="text/javascript" src="lib/gif.js"></script>
+  <script type="text/javascript" src="lib/gif.worker.js"></script>
+  <script type="text/javascript" src="lib/bower_components/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="sketch.js"></script>
 </body>
+
 </html>

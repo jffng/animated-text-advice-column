@@ -15,7 +15,8 @@ var sketch = function(p) {
   }
 
   p.setup = function() {
-    p.createCanvas(screenWidth, screenHeight);
+    var c = p.createCanvas(screenWidth, screenHeight)
+    c.parent('canvas-holder');
     p.background(255);
     p.stroke(200);
     p.fill(255);
@@ -190,7 +191,7 @@ $('.delete').click(function(e) {
 $('.add-line').click(function(e) {
   lineCounter++;
 
-  var newMessage = '<div class="message" id=line-' + lineCounter + '><input type="radio" name="who-' + lineCounter + '" value="receiver">From You <input type="radio" value="sender" name="who-' + lineCounter + '" checked>From Me<input type="text" placeholder="message goes here"><button class="delete">Delete line</button></div>';
+  var newMessage = '<div class="message" id=line-' + lineCounter + '><label><input type="radio" name="who-' + lineCounter + '" value="receiver">From You</label> <label><input type="radio" value="sender" name="who-' + lineCounter + '" checked>From Me</label> <input type="text" placeholder="message goes here"><button class="delete">Delete line</button></div>';
   $('#the-form').append(newMessage);
 
   $('#line-' + lineCounter).children('.delete').click(function(e) {
@@ -232,25 +233,28 @@ function previewGif() {
   // array to be handled by the p5 sketch 
   conversation = [];
   $('#the-form').children('.message').each(function(e) {
-    var message = {};
+    var message;
 
-    if ($(this).children('input:file').length) {
+    if ($(this).find('input:file').length) {
       message = {
         type: "gif",
         height: h,
         width: w
       };
       screenHeight += h + 20;
-    } else {
+    } else if ($(this).find('input:text').val().trim() !== ''){
       message = {
-        type: $(this).children('input:checked').val(),
-        message: $(this).children('input:text').val()
+        type: $(this).find('input:checked').val(),
+        message: $(this).find('input:text').val()
       };
-      screenHeight += Math.ceil($(this).children('input:text').val().length / 40) * 32;
+      screenHeight += Math.ceil($(this).find('input:text').val().length / 40) * 32;
     }
 
-    // new message objects are pushed to the array
-    conversation.push(message);
+    if (message) {
+
+      // new message objects are pushed to the array
+      conversation.push(message);
+    }
   });
 
   // console.log('screen height: ' + screenHeight);
