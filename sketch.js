@@ -183,15 +183,15 @@ $('.delete').click(function(e) {
   lineCounter--;
 });
 
-// $('#the-form').on('submit', function(e) {
-//   console.log('hi');
-//   e.preventDefault();
-// });
+$('#the-form').on('submit', function(e) {
+  e.preventDefault();
+  previewGif();
+});
 
 $('.add-line').click(function(e) {
   lineCounter++;
 
-  var newMessage = '<div class="message" id=line-' + lineCounter + '><label><input type="radio" name="who-' + lineCounter + '" value="receiver">From You</label> <label><input type="radio" value="sender" name="who-' + lineCounter + '" checked>From Me</label> <input type="text" placeholder="message goes here"><button class="delete">Delete line</button></div>';
+  var newMessage = '<div class="message" id=line-' + lineCounter + '><label><input type="radio" name="who-' + lineCounter + '" value="receiver">From You</label> <label><input type="radio" value="sender" name="who-' + lineCounter + '" checked>From Me</label> <input type="text" placeholder="message goes here"><button class="delete" type="button">Delete line</button></div>';
   $('#the-form').append(newMessage);
 
   $('#line-' + lineCounter).children('.delete').click(function(e) {
