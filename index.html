@@ -16,7 +16,7 @@
 		.message {
 
 		}
-		.generate {
+		.preview {
 			margin-left: 100px;
 		}
 		#the-form {
@@ -45,7 +45,8 @@
 		<br>
 		<button class="add-line">+ Message</button>
 		<button class="add-gif">+ Gif</button>
-		<button class="generate">Generate Gif!</button>
+    <button class="preview">Preview</button>
+		<button class="generate">Save</button>
 	</div>
 	<script type="text/javascript" src="lib/p5.min.js"></script>
 	<script type="text/javascript" src="lib/p5.gif.min.js"></script>
@@ -54,139 +55,5 @@
 	<script type="text/javascript" src="lib/gif.worker.js"></script>
 	<script type="text/javascript" src="lib/bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="sketch.js"></script>
-	<script type="text/javascript">
-	var lineCounter = 0;
-	var myp5, conversation, gif, h, w, cut; // gifWidth, gifHeight, gifRatio;
-	var screenWidth = 375;
-	var screenHeight = 0;
-
-	$('.delete').click(function(e){
-		e.preventDefault();
-		$(this).parent().remove();
-		lineCounter--;
-	});
-
-	$('.add-line').click(function(e){
-		lineCounter++;
-
-		var newMessage = '<div class="message" id=line-'+lineCounter+'><input type="radio" name="who-'+lineCounter+'" value="receiver">From You <input type="radio" value="sender" name="who-'+lineCounter+'" checked>From Me<input type="text" placeholder="message goes here"><button class="delete">Delete line</button></div>';
-		$('#the-form').append(newMessage);
-
-		$('#line-'+lineCounter).children('.delete').click(function(e){
-			e.preventDefault();
-			$(this).parent().remove();
-			lineCounter--;
-		});
-	});
-
-	$('.add-gif').click(function(e){
-		if($('#upload').length) {
-			alert("Can only use gif at a time!");
-		} else {
-			$('#the-form').append('<div class="message"><input id="upload" type="file"><button class="delete">Delete line</button></div>');
-			lineCounter++;
-			$('#upload').siblings('.delete').click(function(){
-				$(this).parent().remove();
-				lineCounter--;
-			});
-
-			document.getElementById('upload').addEventListener('change', handleFileSelect, false);			
-
-		}
-
-	});
-
-	$('.generate').click(function(ev){
-		screenHeight = 0;
-		// array to be handled by the p5 sketch 
-		conversation = [];
-		$('#the-form').children('.message').each(function(e){
-			if ($(this).children('input:file').length) {
-				var message = {
-					type: "gif",
-					height: h,
-					width: w
-				}
-				screenHeight += h + 20;
-			} else {
-				var message = {
-					type: $(this).children('input:checked').val(),
-					message: $(this).children('input:text').val()
-				}
-				screenHeight += Math.ceil($(this).children('input:text').val().length / 40) * 32;
-			}
-			
-			// new message objects are pushed to the array
-			conversation.push(message);
-		});
-
-		// console.log('screen height: ' + screenHeight);
-
-		screenHeight += 30;
-
-		if (myp5) myp5.remove();
-		myp5 = new p5(sketch);
-
-		// wait for sketch to load the gif
-		setTimeout(function(){
-			cut = new GIF({
-				workers: 10,
-				quality: 10,
-				width: screenWidth,
-				height: screenHeight
-			});
-
-			var totalFrames = gif.totalFrames();
-			// or copy the pixels from a canvas context
-			for (var i = 0; i < totalFrames; i++) {
-				cut.addFrame(myp5.canvas.getContext('2d'), {
-					copy: true,
-					// delay: 20
-				});
-				console.log(i);
-			}
-			
-			cut.on('finished', function(blob) {
-				window.open(URL.createObjectURL(blob));
-				console.log(blob);
-				console.log('finished the cut');
-			});
-
-			cut.render();
-		}, 2000)
-				
-	});
-
-	function handleFileSelect(evt) {
-		var files = evt.target.files; // FileList object
-		var screenWidth = 375; 
-
-		for (var i = 0, f; f = files[i]; i++) {
-			if (!f.type.match('image.*')) {
-				continue;
-			}
-
-			var reader = new FileReader();
-
-			reader.onload = (function(theFile) {
-				return function(e) {
-					// this is where the magic happens
-					gif = p5.prototype.loadRawGif(e.target.result);
-
-					// this is not a good solution, but i'm tired
-					setTimeout(function(){
-						w = Math.ceil(screenWidth * .6) + 28;
-						var r = gif.width / gif.height;
-						h = w / r;
-
-					}, 500);
-				};
-			})(f);
-
-			reader.readAsBinaryString(f);
-		}
-	}
-
-	</script>
 </body>
 </html>
