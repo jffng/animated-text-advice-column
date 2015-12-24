@@ -224,6 +224,7 @@ $('.preview').click(function(ev) {
 });
 
 $('.generate').click(function(ev) {
+  $(this).attr('disabled', true).text('Saving...');
   previewGif();
   setTimeout(generateGif, 1000);
 });
@@ -295,6 +296,7 @@ function generateGif() {
   cut.on('finished', function(blob) {
     window.open(URL.createObjectURL(blob));
     console.log('finished the cut');
+    $('.generate').attr('disabled', false).text('Save');
     gif.play();
   });
 
