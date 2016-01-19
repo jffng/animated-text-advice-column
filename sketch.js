@@ -94,7 +94,7 @@ var sketch = function(p) {
     var firstCornerX = screenWidth * position;
 
     var str = copy;
-    p.textSize(12);
+    p.textSize(13);
     var numLines = Math.ceil(p.textWidth(str) / maxWidth);
 
     p.textAlign(p.LEFT);
