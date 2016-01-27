@@ -99,6 +99,8 @@ var sketch = function(p) {
 
     p.textAlign(p.LEFT);
 
+    // console.log('numLines: ' + numLines);
+
     switch (numLines) {
       case 1:
         var tWidth = p.textWidth(str);
@@ -116,10 +118,25 @@ var sketch = function(p) {
         textOffset = 2;
         heightScale = .55;
         break;
+      case 4: 
+        width = maxWidth;
+        textOffset = 2;
+        heightScale = .75;
+        break;
+      case 5:
+        width = maxWidth;
+        textOffset = 2;
+        heightScale = .85;
+        break;
+      case 6:
+        width = maxWidth;
+        textOffset = 2;
+        heightScale = .9;
+        break;
       default:
         width = maxWidth;
         textOffset = 2;
-        heightScale = .65;
+        heightScale = 1.1;
         break;
     }
 
